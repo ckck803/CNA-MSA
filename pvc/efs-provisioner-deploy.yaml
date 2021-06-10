@@ -23,7 +23,7 @@ spec:
             - name: FILE_SYSTEM_ID
               value: fs-1d2e9d7d
             - name: AWS_REGION
-              value: ap-northeast-2
+              value: ap-northeast-1
             - name: PROVISIONER_NAME
               value: my-aws.com/aws-efs
           volumeMounts:
@@ -32,5 +32,5 @@ spec:
       volumes:
         - name: pvcs
           nfs:
-            server: fs-1d2e9d7d.efs.ap-northeast-2.amazonaws.com
+            server: fs-1d2e9d7d.efs.ap-northeast-1.amazonaws.com
             path: /

@@ -77,6 +77,19 @@
 - 기타 정비 및 현행화
 ![image](https://user-images.githubusercontent.com/81547613/119284217-1fc57b80-bc7a-11eb-8ad5-59d8efba8487.png)
 
+## 개인 추가 구현
+
+제휴사에서 포인트 적립을 위한 alliance 서비스와 사용자가 자신의 Point 적립 내용을 볼 수 있도록 Point 서비스를 별도로 구현함
+
+### CQRS적으로 구현
+
+- 쓰기 : Pay 서비스를 이용해 Alliance 서비스에 쓰기를 진행
+- 읽기 : Point 서비스에서 자신의 Point 이력을 조회한다.
+
+![](point.png)
+
+<!-- ![](alliance-point.png) -->
+
 ---
 # 구현:
 
@@ -99,77 +112,15 @@ cd notice
 mvn spring-boot:run
 ```
 
+## 개인 구현
+```maven
+cd point
+mvn spring-boot:run
+```
+
 ---
 ## DDD 의 적용
 * 총 5개의 Domain 으로 관리되고 있으며, 예약관리(Reservation) , 결제관리(Approval), 상영영화관리(MovieManagement), 영화좌석관리(MovieSeat), 영화관리(Movie)으로 구성하였습니다. 
-
-```java
-package theater;
-
-@Entity
-@Table(name = "Reservation_table")
-@Setter
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Reservation {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String bookId;
-    private String customerId;
-    private String movieId;
-    private String payId;
-    private String bookedYn;
-
-    @PostLoad
-    public void onPostLoad() {
-        Logger logger = LoggerFactory.getLogger("Reservation");
-        logger.info("Load");
-    }
-
-    @PrePersist
-    public void onPrePersist() throws JsonProcessingException {
-        Logger logger = LoggerFactory.getLogger("Reservation");
-        logger.info("Make Reservation");
-
-        Reserved reserved = new Reserved();
-        BeanUtils.copyProperties(this, reserved);
-
-        Approval approvalFromPay = AppApplication.applicationContext.getBean(theater.external.ApprovalService.class)
-                .paymentRequest(this.bookId);
-
-        if (approvalFromPay != null) {
-            this.setPayId(approvalFromPay.getPayId());
-            ObjectMapper objectMapper = new ObjectMapper();
-            String approvalMessage = objectMapper.writeValueAsString(approvalFromPay);
-        } else {
-            logger.info("=======Pay didn't Approve. Confirm Pay Service.=======");
-        }
-    }
-
-    @PreRemove
-    public void onPostRemove() throws JsonProcessingException {
-        Logger logger = LoggerFactory.getLogger("Reservation");
-        logger.info("Make Canceled");
-
-        Canceled canceled = new Canceled();
-        BeanUtils.copyProperties(this, canceled);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String canceledMessage = objectMapper.writeValueAsString(canceled);
-        logger.info(canceledMessage);
-
-        canceled.publishAfterCommit();
-
-    }
-}
-```
-
-* Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
-
 
 ```java
 package theater;
@@ -586,23 +537,42 @@ app 서비스 : 8081
 pay 서비스 : 8082
 movie 서비스 : 8083
 theater 서비스 : 8084
-notice 서비스 : 8086
 ```
 
 * gateway > applitcation.yml 설정
 
 ![image](https://user-images.githubusercontent.com/81547613/119323918-2d9af100-bcba-11eb-8378-1338b6337b18.png)
 
-### Gateway 테스트
+### 개인 구현
+```
+point 서비스 : 8085
+```
+
+![](gateway-config.png)
+
+
+
+## Gateway 테스트
 
 * Gateway 테스트는 다음과 같이 확인하였다.
 
 > kubectl get all
+
 ![image](https://user-images.githubusercontent.com/81547613/119357273-5505b400-bce2-11eb-854d-12930219b3ad.png)
 
 > External IP:8080 을 통한 API호출을 통해 http://app:8080 으로부터 응답을 받음
+
 ![image](https://user-images.githubusercontent.com/81547613/119356977-fdffdf00-bce1-11eb-8dc6-b098b5ef0975.png)
 
+### 개인과제 구현
+
+point 서비스까지 모두 떠 있는 것을 확인할 수 있다.
+
+![](new-kubenetes-gateway.png)
+
+> http://point:8080 을 통한 API호출을 통해 응답을 받는 것을 확인할 수 있다.
+
+![](new-point-http.png)
 ---
 ## 동기식 호출 과 Fallback 처리
 
@@ -643,6 +613,10 @@ Transfer-Encoding: chunked
 ```
 
 #### 쿠버네티스에서 확인
+
+Pay 서비스가 정상이 아니므로 Pay 서비스를 확인하라는 문구를 보여준다.
+
+![](new-hystrix.png)
 
 ---
 ## 비동기식 호출 / 장애격리 / 성능
@@ -849,43 +823,42 @@ kubectl get all -n kafka
 
 ![image](https://user-images.githubusercontent.com/81547613/119323673-ee6ca000-bcb9-11eb-8564-863fe6384430.png)
 
-### 도커 이미지 만들고 레지스트리에 등록하기
-
-1. Docker를 이용해 이미지 Build
-2. AWS에 Container Registry 생성
-3. 생성된 ECR에 이미지를 Push
+### ECR 생성
 
 ```shell
-cd app
-docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-app:v1 .
-aws ecr create-repository --repository-name user02-app --region ap-northeast-2
-docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-app:v1
-cd ..
-
-cd movie
-docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-movie:v1 .
-aws ecr create-repository --repository-name user02-movie --region ap-northeast-2
-docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-movie:v1
-cd ..
-
-cd pay
-docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-pay:v1 .
-aws ecr create-repository --repository-name user02-pay --region ap-northeast-2
-docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-pay:v1
-cd ..
-
-cd theater
-docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-theater:v1 .
-aws ecr create-repository --repository-name user02-theater --region ap-northeast-2
-docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-theater:v1
-cd ..
-
-cd gateway
-docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-gateway:v1 .
-aws ecr create-repository --repository-name user02-gateway --region ap-northeast-2
-docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-gateway:v1
-cd ..
+aws ecr create-repository --repository-name user12-app --region ap-northeast-1
+aws ecr create-repository --repository-name user12-movie --region ap-northeast-1
+aws ecr create-repository --repository-name user12-pay --region ap-northeast-1
+aws ecr create-repository --repository-name user12-theater --region ap-northeast-1
+aws ecr create-repository --repository-name user12-gateway --region ap-northeast-1
+aws ecr create-repository --repository-name user12-alliance --region ap-northeast-1
+aws ecr create-repository --repository-name user12-point --region ap-northeast-1
 ```
+
+### 서비스들 Docker를 이용해 Build 진행하기
+
+```shell
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-app:v1 ./app
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-movie:v1 ./movie
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-pay:v1 ./pay
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-theater:v1 ./theater
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-gateway:v1 ./gateway
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-alliance:v1 ./alliance
+docker build -t 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-point:v1 ./point
+```
+
+### ECR에 이미지들을 Push
+
+```shell
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-app:v1
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-movie:v1
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-pay:v1
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-theater:v1
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-gateway:v1
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-alliance:v1
+docker push 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-point:v1
+```
+
 
 
 ### deployment.yml로 서비스 배포
@@ -933,33 +906,27 @@ spec:
 
 ```
 
-#### 배포처리
+## 배포처리
+
+### 서비스 배포
 
 ```shell
-cd app
-kubectl apply -f ./kubernetes --namespace=team02
-cd ..
+kubectl apply -f ./app/kubernetes --namespace=user12
+kubectl apply -f ./pay/kubernetes --namespace=user12
+kubectl apply -f ./movie/kubernetes --namespace=user12
+kubectl apply -f ./theater/kubernetes --namespace=user12
+kubectl apply -f ./alliance/kubernetes --namespace=user12
+kubectl apply -f ./point/kubernetes --namespace=user12
+```
 
-cd pay
-kubectl apply -f ./kubernetes --namespace=team02
-cd ..
-
-cd movie
-kubectl apply -f ./kubernetes --namespace=team02
-cd ..
-
-cd theater
-kubectl apply -f ./kubernetes --namespace=team02
-cd ..
-
+### Gateway Service 배포
+```shell
 cd gateway
 kubectl create deploy gateway --image=052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-gateway:v1
 # gateway는 외부에서 접속이 가능하게 LoadBalancer형태로 deploy한다.
 kubectl expose deploy gateway --type="LoadBalancer" --port=8080
 ```
-
-![image](https://user-images.githubusercontent.com/80908892/119253234-3c66a280-bbeb-11eb-9904-11bdedeebd69.png)
-
+![](new-kubenetes-gateway.png)
 ---
 ## 동기식 호출 / 서킷 브레이킹 / 장애격리
 
@@ -990,7 +957,7 @@ hystrix:
       execution.isolation.thread.timeoutInMilliseconds: 610
 ```
 
-### 부하테스트
+## 부하테스트
 
 
 * Siege 리소스 생성
@@ -1015,7 +982,6 @@ siege -c200 -t60S -r10 -v --content-type "application/json" http://app:8080/isol
 
 1. App 서비스에 isolations로 요청이 들어온다.
 2. App 서비스에서 Pay 서비스의 isolations로 요청을 보낸다.
-3. 
 
 > ReservationController
 
@@ -1089,11 +1055,11 @@ public String isolation(HttpServletRequest request, HttpServletResponse response
 - 부하 발생하여 CB가 발동하여 요청 실패처리하였고, 밀린 부하가 pay 서비스에서 처리되면서 
 다시 pay에서 서비스를 받기 시작 합니다
 
-![image](https://user-images.githubusercontent.com/80908892/119437873-f3812c00-bd59-11eb-93e2-760ff7784a0d.png)
+![](new-stress.png)
 
 - report
 
-![image](https://user-images.githubusercontent.com/80908892/119437975-20cdda00-bd5a-11eb-86d5-36fec86da983.png)
+![](new-stress-result.png)
 
 ---
 ## 오토스케일 아웃
@@ -1136,6 +1102,8 @@ spec:
 kubectl autoscale deployment movie --cpu-percent=50 --min=1 --max=10
 ```
 
+![](new-hpa.png)
+
 ### 부하기능 API 추가
 
 ```java
@@ -1171,36 +1139,11 @@ kubectl exec -it pod/stresstool-85fb8c78db-77fb4 -- /bin/bash
 siege -c60 -t60S -v http://movie:8080/hpa
 ```
 
-> 결과
-
-```shell
-HTTP/1.1 200     0.04 secs:       3 bytes ==> GET  /hpa
-HTTP/1.1 200     0.04 secs:       3 bytes ==> GET  /hpa
-HTTP/1.1 200     0.04 secs:       3 bytes ==> GET  /hpa
-HTTP/1.1 200     0.03 secs:       3 bytes ==> GET  /hpa
-HTTP/1.1 200     0.01 secs:       3 bytes ==> GET  /hpa
-HTTP/1.1 200     0.14 secs:       3 bytes ==> GET  /hpa
-HTTP/1.1 200     0.06 secs:       3 bytes ==> GET  /hpa
-
-Lifting the server siege...
-Transactions:                   8314 hits
-Availability:                 100.00 %
-Elapsed time:                  59.19 secs
-Data transferred:               0.02 MB
-Response time:                  0.42 secs
-Transaction rate:             140.46 trans/sec
-Throughput:                     0.00 MB/sec
-Concurrency:                   59.42
-Successful transactions:        8314
-Failed transactions:               0
-Longest transaction:            5.30
-Shortest transaction:           0.00
-```
+![](new-hap-result.png)
 
 ### 오토스케일링에 대한 모니터링:
-![image](https://user-images.githubusercontent.com/80908892/119321129-45bd4100-bcb7-11eb-81b3-bd83a29251da.png)
 
-
+![](new-autoscale.png)
 ---
 ## Config Map
 
@@ -1230,6 +1173,54 @@ env:
     configMapKeyRef:
       name: mid-cm
       key: mid
+```
+
+#### 전체
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pay
+  labels:
+    app: pay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pay
+  template:
+    metadata:
+      labels:
+        app: pay
+    spec:
+      containers:
+        - name: pay
+          image: 879772956301.dkr.ecr.ap-northeast-1.amazonaws.com/user12-pay:v1
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+          env:
+            - name: MID
+              valueFrom:
+                configMapKeyRef:
+                  name: mid-cm
+                  key: mid
 ```
 
 ### apllication.yml 설정

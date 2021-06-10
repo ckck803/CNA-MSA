@@ -74,3 +74,6 @@ spring:
         event-out:
           destination: theater
           contentType: application/json
+
+pay:
+  mid: ${MID}
