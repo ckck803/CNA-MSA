@@ -1,0 +1,113 @@
+server:
+  port: 8080
+---
+
+spring:
+  profiles: default
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+    datasource:
+      hikari:
+        driver-class-name: org.h2.Driver
+      url: jdbc:h2:mem:testdb
+      sql-script-encoding: UTF-8
+      username: sa
+      password:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: app
+          destination: theater
+          contentType: application/json
+        event-out:
+          destination: theater
+          contentType: application/json
+
+feign:
+  pay-api:
+    url: http://localhost:8082
+  httpclient:
+    connection-timeout: 1
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        loggerLevel: BASIC
+#        connectTimeout: 5000
+#        readTimeout: 5000
+hystrix:
+  command:
+    # 전역설정
+    default:
+      execution.isolation.thread.timeoutInMilliseconds: 610
+
+logging:
+  level:
+    org.hibernate.type: trace
+    org.springframework.cloud: debug
+server:
+  port: 8081
+---
+
+spring:
+  profiles: docker
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: my-kafka.kafka.svc.cluster.local:9092
+        streams:
+          binder:
+            configuration:
+              default:
+                key:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+                value:
+                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      bindings:
+        event-in:
+          group: app
+          destination: theater
+          contentType: application/json
+        event-out:
+          destination: theater
+          contentType: application/json
+
+feign:
+  pay-api:
+    url: http://pay:8080
+  httpclient:
+    connection-timeout: 1
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+#        connectTimeout: 5000
+#        readTimeout: 5000
+
+#logging:
+#  level:
+#    theater.ApprovalService: DEBUG

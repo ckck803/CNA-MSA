@@ -1,0 +1,712 @@
+--------------------------------------------------------------------------------------------
+[계정연걸]
+root@labs-1227910482:/home/project/team# aws configure
+AWS Access Key ID [None]: AKIAQYU2ROSK4JEJH2VM
+AWS Secret Access Key [None]: ~~
+Default region name [None]: ap-northeast-2
+Default output format [None]: json
+
+root@labs-1227910482:/home/project/team# cat ~/.aws/credentials
+[default]
+aws_access_key_id = AAKIAQYU2ROSK4JEJH2VM
+aws_secret_access_key = ~~
+
+root@labs-1227910482:/home/project/team# cat ~/.aws/config
+[default]
+region = ap-northeast-2
+output = json
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[클러스터 생성]
+root@labs-1227910482:/home/project/team# eksctl create cluster --name user02-eks --version 1.17 --nodegroup-name standard-workers --node-type t3.medium --nodes 4 --nodes-min 1 --nodes-max 4
+2021-05-24 04:42:31 [ℹ]  eksctl version 0.48.0
+2021-05-24 04:42:31 [ℹ]  using region ap-northeast-2
+2021-05-24 04:42:31 [ℹ]  setting availability zones to [ap-northeast-2a ap-northeast-2b ap-northeast-2d]
+2021-05-24 04:42:31 [ℹ]  subnets for ap-northeast-2a - public:192.168.0.0/19 private:192.168.96.0/19
+2021-05-24 04:42:31 [ℹ]  subnets for ap-northeast-2b - public:192.168.32.0/19 private:192.168.128.0/19
+2021-05-24 04:42:31 [ℹ]  subnets for ap-northeast-2d - public:192.168.64.0/19 private:192.168.160.0/19
+2021-05-24 04:42:31 [ℹ]  nodegroup "standard-workers" will use "ami-07d5a263a08acfd26" [AmazonLinux2/1.17]
+2021-05-24 04:42:31 [ℹ]  using Kubernetes version 1.17
+2021-05-24 04:42:31 [ℹ]  creating EKS cluster "user02-eks" in "ap-northeast-2" region with un-managed nodes
+2021-05-24 04:42:31 [ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
+2021-05-24 04:42:31 [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=ap-northeast-2 --cluster=user02-eks'
+2021-05-24 04:42:31 [ℹ]  CloudWatch logging will not be enabled for cluster "user02-eks" in "ap-northeast-2"
+2021-05-24 04:42:31 [ℹ]  you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=ap-northeast-2 --cluster=user02-eks'
+2021-05-24 04:42:31 [ℹ]  Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "user02-eks" in "ap-northeast-2"
+2021-05-24 04:42:31 [ℹ]  2 sequential tasks: { create cluster control plane "user02-eks", 2 sequential sub-tasks: { wait for control plane to become ready, create nodegroup "standard-workers" } }
+2021-05-24 04:42:31 [ℹ]  building cluster stack "eksctl-user02-eks-cluster"
+2021-05-24 04:42:31 [ℹ]  deploying stack "eksctl-user02-eks-cluster"
+2021-05-24 04:43:01 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:43:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:44:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:45:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:46:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:47:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:48:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:49:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:50:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:51:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:52:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:53:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:54:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-cluster"
+2021-05-24 04:54:32 [ℹ]  building nodegroup stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:54:33 [ℹ]  deploying stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:54:33 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:54:49 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:55:06 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:55:25 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:55:42 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:56:02 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:56:22 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:56:40 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:56:57 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:57:15 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:57:32 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:57:48 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:58:06 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:58:22 [ℹ]  waiting for CloudFormation stack "eksctl-user02-eks-nodegroup-standard-workers"
+2021-05-24 04:58:22 [ℹ]  waiting for the control plane availability...
+2021-05-24 04:58:22 [✔]  saved kubeconfig as "/root/.kube/config"
+2021-05-24 04:58:22 [ℹ]  no tasks
+2021-05-24 04:58:22 [✔]  all EKS cluster resources for "user02-eks" have been created
+2021-05-24 04:58:22 [ℹ]  adding identity "arn:aws:iam::052937454741:role/eksctl-user02-eks-nodegroup-stand-NodeInstanceRole-1D869RUS4CCKA" to auth ConfigMap
+2021-05-24 04:58:22 [ℹ]  nodegroup "standard-workers" has 0 node(s)
+2021-05-24 04:58:22 [ℹ]  waiting for at least 1 node(s) to become ready in "standard-workers"
+2021-05-24 04:58:44 [ℹ]  nodegroup "standard-workers" has 4 node(s)
+2021-05-24 04:58:44 [ℹ]  node "ip-192-168-10-32.ap-northeast-2.compute.internal" is ready
+2021-05-24 04:58:44 [ℹ]  node "ip-192-168-55-233.ap-northeast-2.compute.internal" is not ready
+2021-05-24 04:58:44 [ℹ]  node "ip-192-168-84-23.ap-northeast-2.compute.internal" is not ready
+2021-05-24 04:58:44 [ℹ]  node "ip-192-168-85-187.ap-northeast-2.compute.internal" is not ready
+2021-05-24 04:58:46 [ℹ]  kubectl command should work with "/root/.kube/config", try 'kubectl get nodes'
+2021-05-24 04:58:46 [✔]  EKS cluster "user02-eks" in "ap-northeast-2" region is ready
+root@labs-1227910482:/home/project/team# kubectl get nodes
+NAME                                                STATUS   ROLES    AGE     VERSION
+ip-192-168-10-32.ap-northeast-2.compute.internal    Ready    <none>   4m51s   v1.17.12-eks-7684af
+ip-192-168-55-233.ap-northeast-2.compute.internal   Ready    <none>   4m52s   v1.17.12-eks-7684af
+ip-192-168-84-23.ap-northeast-2.compute.internal    Ready    <none>   4m47s   v1.17.12-eks-7684af
+ip-192-168-85-187.ap-northeast-2.compute.internal   Ready    <none>   4m53s   v1.17.12-eks-7684af
+root@labs-1227910482:/home/project/team# kubectl get all
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP   12m
+root@labs-1227910482:/home/project/team# kubectl config get-contexts
+CURRENT   NAME                                         CLUSTER                               AUTHINFO                                     NAMESPACE
+          kcb-test2.k8s.local                          kcb-test2.k8s.local                   labs-1227910482                              labs-1227910482
+*         user02@user02-eks.ap-northeast-2.eksctl.io   user02-eks.ap-northeast-2.eksctl.io   user02@user02-eks.ap-northeast-2.eksctl.io   
+root@labs-1227910482:/home/project/team# kubectl get nodes
+NAME                                                STATUS   ROLES    AGE   VERSION
+ip-192-168-10-32.ap-northeast-2.compute.internal    Ready    <none>   33m   v1.17.12-eks-7684af
+ip-192-168-55-233.ap-northeast-2.compute.internal   Ready    <none>   33m   v1.17.12-eks-7684af
+ip-192-168-84-23.ap-northeast-2.compute.internal    Ready    <none>   33m   v1.17.12-eks-7684af
+ip-192-168-85-187.ap-northeast-2.compute.internal   Ready    <none>   33m   v1.17.12-eks-7684af
+--------------------------------------------------------------------------------------------
+※ aws eks --region ap-northeast-2 update-kubeconfig --name user02-eks
+
+
+--------------------------------------------------------------------------------------------
+[Helm설치]
+root@labs-1227910482:/home/project/team# curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 11248  100 11248    0     0  33981      0 --:--:-- --:--:-- --:--:-- 33981
+root@labs-1227910482:/home/project/team# chmod 700 get_helm.sh
+root@labs-1227910482:/home/project/team# ./get_helm.sh
+Downloading https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
+Verifying checksum... Done.
+Preparing to install helm into /usr/local/bin
+helm installed into /usr/local/bin/helm
+root@labs-1227910482:/home/project/team# helm repo add incubator https://charts.helm.sh/incubator
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /root/.kube/config
+"incubator" has been added to your repositories
+root@labs-1227910482:/home/project/team# helm repo update
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: /root/.kube/config
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: /root/.kube/config
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "incubator" chart repository
+Update Complete. ⎈Happy Helming!⎈
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[kafka설치]
+root@labs-1227910482:/home/project/team# kubectl create ns kafka
+namespace/kafka created
+root@labs-1227910482:/home/project/team# kubectl get ns
+NAME              STATUS   AGE
+default           Active   41m
+kafka             Active   8s
+kube-node-lease   Active   41m
+kube-public       Active   41m
+kube-system       Active   41m
+
+helm install my-kafka --namespace kafka incubator/kafka
+
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/my-kafka-0             1/1     Running   1          4m34s
+pod/my-kafka-1             1/1     Running   0          2m48s
+pod/my-kafka-2             1/1     Running   0          106s
+pod/my-kafka-zookeeper-0   1/1     Running   0          4m34s
+pod/my-kafka-zookeeper-1   1/1     Running   0          4m4s
+pod/my-kafka-zookeeper-2   1/1     Running   0          3m28s
+
+NAME                                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+service/my-kafka                      ClusterIP   10.100.70.144    <none>        9092/TCP                     4m34s
+service/my-kafka-headless             ClusterIP   None             <none>        9092/TCP                     4m34s
+service/my-kafka-zookeeper            ClusterIP   10.100.123.194   <none>        2181/TCP                     4m34s
+service/my-kafka-zookeeper-headless   ClusterIP   None             <none>        2181/TCP,3888/TCP,2888/TCP   4m34s
+
+NAME                                  READY   AGE
+statefulset.apps/my-kafka             3/3     4m34s
+statefulset.apps/my-kafka-zookeeper   3/3     4m34s
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[project namespace 생성]
+root@labs-1227910482:/home/project/team# kubectl create ns team02
+namespace/team02 created
+root@labs-1227910482:/home/project/team# kubectl get ns
+NAME              STATUS   AGE
+default           Active   56m
+kafka             Active   14m
+kube-node-lease   Active   56m
+kube-public       Active   56m
+kube-system       Active   56m
+team02            Active   4s
+root@labs-1227910482:/home/project/team# kubectl config get-contexts
+CURRENT   NAME                                         CLUSTER                               AUTHINFO                                     NAMESPACE
+          kcb-test2.k8s.local                          kcb-test2.k8s.local                   labs-1227910482                              labs-1227910482
+*         user02@user02-eks.ap-northeast-2.eksctl.io   user02-eks.ap-northeast-2.eksctl.io   user02@user02-eks.ap-northeast-2.eksctl.io   
+root@labs-1227910482:/home/project/team# kubectl config set-context $(kubectl config current-context) --namespace=team02
+Context "user02@user02-eks.ap-northeast-2.eksctl.io" modified.
+root@labs-1227910482:/home/project/team# kubectl config get-contexts
+CURRENT   NAME                                         CLUSTER                               AUTHINFO                                     NAMESPACE
+          kcb-test2.k8s.local                          kcb-test2.k8s.local                   labs-1227910482                              labs-1227910482
+*         user02@user02-eks.ap-northeast-2.eksctl.io   user02-eks.ap-northeast-2.eksctl.io   user02@user02-eks.ap-northeast-2.eksctl.io   team02
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[test용 pod deploy]
+root@labs-1227910482:/home/project/team# kubectl run stresstool --image=apexacme/siege-nginx
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+deployment.apps/stresstool created
+root@labs-1227910482:/home/project/team# kubectl get all
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/stresstool-85fb8c78db-77fb4   1/1     Running   0          14s
+
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/stresstool   1/1     1            1           14s
+
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/stresstool-85fb8c78db   1         1         1       14s
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[소스 clone]
+root@labs-1227910482:/home/project/team/reqres_theater# git clone https://github.com/skycows/reqres_theater.git
+root@labs-1227910482:/home/project/team/reqres_theater# ls -alrt
+total 928
+drwxr-xr-x 3 root root   6144 May 24 05:57 ..
+-rw-r--r-- 1 root root    395 May 24 05:57 .gitignore
+-rw-r--r-- 1 root root   3429 May 24 05:57 AppTest.md
+-rw-r--r-- 1 root root  39967 May 24 05:57 README.md
+drwxr-xr-x 4 root root   6144 May 24 05:57 app
+-rw-r--r-- 1 root root  92278 May 24 05:57 bad-reqeust.png
+-rw-r--r-- 1 root root  83487 May 24 05:57 cancel.png
+drwxr-xr-x 3 root root   6144 May 24 05:57 gateway
+drwxr-xr-x 4 root root   6144 May 24 05:57 movie
+drwxr-xr-x 4 root root   6144 May 24 05:57 notice
+-rw-r--r-- 1 root root  66486 May 24 05:57 pay-delete.png
+-rw-r--r-- 1 root root  76327 May 24 05:57 pay.png
+drwxr-xr-x 4 root root   6144 May 24 05:57 pay
+-rw-r--r-- 1 root root  79170 May 24 05:57 pending.png
+-rw-r--r-- 1 root root 369612 May 24 05:57 project-map.png
+-rw-r--r-- 1 root root  78818 May 24 05:57 reservation.png
+drwxr-xr-x 9 root root   6144 May 24 05:57 .
+drwxr-xr-x 4 root root   6144 May 24 05:57 theater
+drwxr-xr-x 8 root root   6144 May 24 05:57 .git
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[build 및 push]
+root@labs-1227910482:/home/project/team/reqres_theater/app# cd app
+root@labs-1227910482:/home/project/team/reqres_theater/app# mvn clean && mvn package
+root@labs-1227910482:/home/project/team/reqres_theater/app# docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-app:v1 .
+Sending build context to Docker daemon 62.67 MB
+Step 1/4 : FROM openjdk:8u212-jdk-alpine
+8u212-jdk-alpine: Pulling from library/openjdk
+e7c96db7181b: Pull complete 
+f910a506b6cb: Pull complete 
+c2274a1a0e27: Pull complete 
+Digest: sha256:94792824df2df33402f201713f932b58cb9de94a0cd524164a0f2283343547b3
+Status: Downloaded newer image for openjdk:8u212-jdk-alpine
+ ---> a3562aa0b991
+Step 2/4 : COPY target/*SNAPSHOT.jar app.jar
+ ---> cf379c0729c7
+Step 3/4 : EXPOSE 8080
+ ---> Running in ea4521cedcea
+Removing intermediate container ea4521cedcea
+ ---> c3852fff081e
+Step 4/4 : ENTRYPOINT ["java","-Xmx400M","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar","--spring.profiles.active=docker"]
+ ---> Running in 0e40b5930dfe
+Removing intermediate container 0e40b5930dfe
+ ---> 8f6fd1e4808e
+Successfully built 8f6fd1e4808e
+Successfully tagged 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/app:v1
+
+root@labs-1227910482:/home/project/team/reqres_theater/app# docker login --username AWS -p $(aws ecr get-login-password --region ap-northeast-2)  052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/
+root@labs-1227910482:/home/project/team/reqres_theater/app# docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-app:v1
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[k8s deploy]
+- deployment.yml 수정
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels:
+    app: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-app:v1
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+root@labs-1227910482:/home/project/team/reqres_theater/app# kubectl apply -f ./kubernetes
+deployment.apps/app created
+service/app created
+root@labs-1227910482:/home/project/team/reqres_theater/app# kubectl get all
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/app-7c46c5ccf8-pwjhl          1/1     Running   0          56s
+pod/stresstool-85fb8c78db-77fb4   1/1     Running   0          31m
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/app   ClusterIP   10.100.71.128   <none>        8080/TCP   56s
+
+NAME                         READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/app          1/1     1            1           56s
+deployment.apps/stresstool   1/1     1            1           31m
+
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/app-7c46c5ccf8          1         1         1       56s
+replicaset.apps/stresstool-85fb8c78db   1         1         1       31m    
+
+나머지 서비스 동일한 반복 작업 수행
+cd movie
+mvn clean && mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-movie:v1 .
+aws ecr create-repository --repository-name user02-movie --region ap-northeast-2
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-movie:v1
+kubectl apply -f ./kubernetes
+cd ..
+
+cd pay
+mvn clean && mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-pay:v1 .
+aws ecr create-repository --repository-name user02-pay --region ap-northeast-2
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-pay:v1
+kubectl apply -f ./kubernetes
+cd ..
+
+cd theater
+mvn clean && mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-theater:v1 .
+aws ecr create-repository --repository-name user02-theater --region ap-northeast-2
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-theater:v1
+kubectl apply -f ./kubernetes
+
+gateway배포
+cd gateway
+mvn clean && mvn package
+docker build -t 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-gateway:v1 .
+aws ecr create-repository --repository-name user02-gateway --region ap-northeast-2
+docker push 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-gateway:v1
+kubectl create deploy gateway --image=052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-gateway:v1
+kubectl expose deploy gateway --type="LoadBalancer" --port=8080
+
+참고사항 : Build한 도커이미지를 Push 할때 Auth (권한) 오류가 날 경우 아래 명령의 리전 및 이미지명 수정하여 수행 필요
+docker login -u AWS -p $(aws ecr get-login-password --region ap-northeast-2) 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com
+--------------------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------------------------
+[HPA]
+kubectl apply -f  https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.7/components.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movie
+  labels:
+    app: movie
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movie
+  template:
+    metadata:
+      labels:
+        app: movie
+    spec:
+      containers:
+        - name: movie
+          image: 052937454741.dkr.ecr.ap-northeast-2.amazonaws.com/user02-movie:v1
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+          resources:
+            limits:
+              cpu: "500m"
+            requests:
+              cpu: "200m"
+
+kubectl autoscale deployment movie --cpu-percent=50 --min=1 --max=10
+
+root@labs-1227910482:/home/project/team/reqres_theater/movie# kubectl exec -it pod/stresstool-85fb8c78db-77fb4 -- /bin/bash
+root@stresstool-85fb8c78db-77fb4:/# siege -c60 -t60S -v http://movie:8080/hpa
+HTTP/1.1 200     0.04 secs:       3 bytes ==> GET  /hpa
+HTTP/1.1 200     0.04 secs:       3 bytes ==> GET  /hpa
+HTTP/1.1 200     0.04 secs:       3 bytes ==> GET  /hpa
+HTTP/1.1 200     0.03 secs:       3 bytes ==> GET  /hpa
+HTTP/1.1 200     0.01 secs:       3 bytes ==> GET  /hpa
+HTTP/1.1 200     0.14 secs:       3 bytes ==> GET  /hpa
+HTTP/1.1 200     0.06 secs:       3 bytes ==> GET  /hpa
+
+Lifting the server siege...
+Transactions:                   8314 hits
+Availability:                 100.00 %
+Elapsed time:                  59.19 secs
+Data transferred:               0.02 MB
+Response time:                  0.42 secs
+Transaction rate:             140.46 trans/sec
+Throughput:                     0.00 MB/sec
+Concurrency:                   59.42
+Successful transactions:        8314
+Failed transactions:               0
+Longest transaction:            5.30
+Shortest transaction:           0.00
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[PVC]
+
+root@labs-1430904122:/home/project/team/efs-yaml# ll
+total 24
+drwxr-xr-x  2 root root 6144 May 25 02:12 ./
+drwxr-xr-x 10 root root 6144 May 25 01:59 ../
+-rw-r--r--  1 root root  872 May 25 02:12 efs-provisioner-deploy.yaml
+-rw-r--r--  1 root root  126 May 25 01:59 efs-provisioner-storageclass.yaml
+-rw-r--r--  1 root root 1330 May 25 01:59 rbac.yaml
+-rw-r--r--  1 root root   89 May 25 01:59 service_account.yaml
+
+root@labs-1430904122:/home/project/team/efs-yaml# cat efs-provisioner-deploy.yaml 
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: team02
+  name: efs-provisioner
+spec:
+  selector:
+    matchLabels:
+      app: efs-provisioner
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: efs-provisioner
+    spec:
+      serviceAccount: efs-provisioner
+      containers:
+        - name: efs-provisioner
+          image: quay.io/external_storage/efs-provisioner:v2.4.0
+          env:
+            - name: FILE_SYSTEM_ID
+              value: fs-1d2e9d7d
+            - name: AWS_REGION
+              value: ap-northeast-2
+            - name: PROVISIONER_NAME
+              value: my-aws.com/aws-efs
+          volumeMounts:
+            - name: pvcs
+              mountPath: /pvcs
+      volumes:
+        - name: pvcs
+          nfs:
+            server: fs-1d2e9d7d.efs.ap-northeast-2.amazonaws.com
+            path: /
+
+root@labs-1430904122:/home/project/team/efs-yaml# kubectl apply -f .
+serviceaccount/efs-provisioner created
+clusterrole.rbac.authorization.k8s.io/efs-provisioner-runner created
+clusterrolebinding.rbac.authorization.k8s.io/run-efs-provisioner created
+role.rbac.authorization.k8s.io/leader-locking-efs-provisioner created
+rolebinding.rbac.authorization.k8s.io/leader-locking-efs-provisioner created
+deployment.apps/efs-provisioner configured
+storageclass.storage.k8s.io/efs-provisioner configured
+
+root@labs-1430904122:/home/project/team/efs-yaml# kubectl get sc
+NAME              PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+aws-efs           my-aws.com/aws-efs      Delete          Immediate              false                  10h
+efs-provisioner   user02-efs              Delete          Immediate              false                  11h
+gp2 (default)     kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   false                  21h
+
+root@labs-1430904122:/home/project/team/efs-yaml# kubectl get pvc
+NAME      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+aws-efs   Bound    pvc-0f90e1d5-8edd-491d-bcfe-4c8f86a606b3   1Mi        RWX            aws-efs        10h
+
+
+[테스트]
+root@labs-1227910482:/home/project/reqres_theater/movie/kubernetes# kubectl exec -it pod/mypod -- bin/bash
+root@mypod:/mnt/aws# echo "team02 message.!!!" >> msg.txt
+echo "team02 message.vi!" >> msg.txt
+root@mypod:/mnt/aws# ls
+msg.txt
+root@mypod:/mnt/aws# cat msg.txt 
+team02 message.vi!
+
+
+root@labs-1227910482:/home/project/reqres_theater/movie/kubernetes# kubectl exec -it pod/movie-67d777cc7d-78j9r -- bin/sh
+/ # ls
+app.jar  dev      home     media    opt      root     sbin     sys      usr
+bin      etc      lib      mnt      proc     run      srv      tmp      var
+/ # cd mnt
+/mnt # ls
+aws
+/mnt # cd aws
+/mnt/aws # ls
+msg.txt
+/mnt/aws # cat msg.txt 
+team02 message.vi!
+/mnt/aws # 
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[configMap - 처리]
+root@labs-1227910482:/home/project/team/container-orchestration/yaml/volume/aws# kubectl create configmap mid-cm --from-literal=mid=pg0000123
+configmap/mid-cm created
+root@labs-1227910482:/home/project/team/container-orchestration/yaml/volume/aws# kubectl get cm
+NAME     DATA   AGE
+mid-cm   1      42s
+
+***************************************************
+- yml(deploy)
+          env:
+          - name: MID
+            valueFrom:
+              configMapKeyRef:
+                name: mid-cm
+                key: mid
+***************************************************
+- yml(application)
+pay:
+  mid: ${MID}
+***************************************************
+- Java source(ApprovalController.java)
+  @Value("${pay.mid}")
+	String mid;
+
+  @GetMapping("/cm")
+  public String getCM() {
+      return mid;
+  }
+***************************************************
+#test
+root@stresstool-85fb8c78db-77fb4:/# http pay:8080/cm
+HTTP/1.1 200 
+Content-Length: 9
+Content-Type: text/plain;charset=UTF-8
+Date: Mon, 24 May 2021 15:04:29 GMT
+
+pg0000123
+--------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------
+[readiness - 처리]
+- MovieManagementController.java
+#####################################################
+    @GetMapping("/serviceAddress")
+    public String getServiceAddress () {
+        String serviceAddress = null;
+        if (serviceAddress == null) {
+            serviceAddress = findMyHostname() + "/" + findMyIpAddress();
+        }
+        return serviceAddress;
+    }
+
+    private String findMyHostname() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return "unknown host name";
+        }
+    }
+
+    private String findMyIpAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            return "unknown IP address";
+        }
+    }
+#####################################################
+
+- deployment.yml
+#####################################################
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+#####################################################
+
+# kubectl exec -it pod/multitool -- /bin/sh
+root@stresstool:/# while true; do curl movie:8080/serviceAddress; echo echo ""; sleep 1; done
+root@stresstool:/# http http://movie:8080/actuator/health
+root@stresstool:/# http put http://movie:8080/actuator/down 
+
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/movie-5f6c5757cb-5q2j8   1/1     Running   0          7m43s
+pod/movie-5f6c5757cb-m7brh   1/1     Running   0          5m13s
+pod/multitool                1/1     Running   1          10h
+pod/order-666f44f458-rj6tt   1/1     Running   1          10h
+pod/stresstool               1/1     Running   0          28m
+
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP    44h
+service/movie        ClusterIP   10.109.231.88   <none>        8080/TCP   37m
+service/order        ClusterIP   10.101.87.106   <none>        8080/TCP   10h
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/movie   2/2     2            2           37m
+deployment.apps/order   1/1     1            1           10h
+
+NAME                               DESIRED   CURRENT   READY   AGE
+replicaset.apps/movie-579c86bb74   0         0         0       34m
+replicaset.apps/movie-5f6c5757cb   2         2         2       33m
+replicaset.apps/movie-646c54d996   0         0         0       37m
+replicaset.apps/order-666f44f458   1         1         1       10h
+replicaset.apps/order-855c574888   0         0         0       10h
+
+
+ # while true; do curl movie:8080/serviceAddress; echo echo ""; sleep 1; done
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo  <<<< health down
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo  <<<< only one pod
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+--------------------------------------------------------------------------------------------
+
+[Poliglot - hsqldb]
+
+# pom.xml
+#########################################
+	<dependency>
+		<groupId>org.hsqldb</groupId>
+		<artifactId>hsqldb</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+#########################################
+
+# application.yml
+#########################################
+  datasource:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver 
+    url: jdbc:hsqldb:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password: 
+#########################################

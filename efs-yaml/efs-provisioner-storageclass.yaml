@@ -1,0 +1,6 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  namespace: team02
+  name: efs-provisioner
+provisioner: user02-efs

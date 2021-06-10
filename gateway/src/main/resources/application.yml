@@ -1,0 +1,85 @@
+server:
+  port: 8088
+---
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: app
+          uri: http://localhost:8081
+          predicates:
+            - Path=/reservations/**
+        - id: pay
+          uri: http://localhost:8082
+          predicates:
+            - Path=/approvals/**
+        - id: movie
+          uri: http://localhost:8083
+          predicates:
+            - Path=/movieManagements/**, /movieInquiries/**, /listinqueries/**, /detailinqueries/**
+        - id: theater
+          uri: http://localhost:8084
+          predicates:
+            - Path=/movieSeats/**, /movies/**, /reservationavailabilityinquiries/**
+        - id: alliance
+          uri: http://localhost:8085
+          predicates:
+            - Path=/pointManagements/**
+        - id: point
+          uri: http://localhost:8086
+          predicates:
+            - Path=/points/**
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+---
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: app
+          uri: http://app:8080
+          predicates:
+            - Path=/moviePoints/**
+        - id: pay
+          uri: http://pay:8080
+          predicates:
+            - Path=/approvals/**
+        - id: movie
+          uri: http://movie:8080
+          predicates:
+            - Path=/movieManagements/**, /movieInquiries/**, /listinqueries/**, /detailinqueries/**
+        - id: theater
+          uri: http://theater:8080
+          predicates:
+            - Path=/movieSeats/**, /movies/**, /reservationavailabilityinquiries/**
+        - id: alliance
+          uri: http://alliance:8080
+          predicates:
+            - Path=/pointManagements/**
+        - id: point
+          uri: http://point:8080
+          predicates:
+            - Path=/points/**
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080

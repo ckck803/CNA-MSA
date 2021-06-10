@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: team02
+  name: efs-provisioner
+spec:
+  selector:
+    matchLabels:
+      app: efs-provisioner
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: efs-provisioner
+    spec:
+      serviceAccount: efs-provisioner
+      containers:
+        - name: efs-provisioner
+          image: quay.io/external_storage/efs-provisioner:v2.4.0
+          env:
+            - name: FILE_SYSTEM_ID
+              value: fs-1d2e9d7d
+            - name: AWS_REGION
+              value: ap-northeast-2
+            - name: PROVISIONER_NAME
+              value: my-aws.com/aws-efs
+          volumeMounts:
+            - name: pvcs
+              mountPath: /pvcs
+      volumes:
+        - name: pvcs
+          nfs:
+            server: fs-1d2e9d7d.efs.ap-northeast-2.amazonaws.com
+            path: /
