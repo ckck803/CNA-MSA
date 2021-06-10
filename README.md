@@ -137,114 +137,32 @@ public interface ReservationRepository extends PagingAndSortingRepository<Reserv
 ---
 ## 마이크로 서비스 호출 흐름
 
-
+```
+kubectl exec -it pod/siege -c siege -- /bin/bash
+```
 ### 영화 등록 처리 : 관리자가 영화를 등록 합니다.
 
 * MOVIE 등록
 ```
-http POST http://localhost:8083/movieManagements movieId="MOVIE-00001" title="어벤져스" status="RUNNING"
-http POST http://localhost:8083/movieManagements movieId="MOVIE-00002" title="아이언맨" status="RUNNING"
-http POST http://localhost:8083/movieManagements movieId="MOVIE-00003" title="토르" status="WAITING"
+http POST http://movie:8080/movieManagements movieId="MOVIE-00001" title="어벤져스" status="RUNNING"
+http POST http://movie:8080/movieManagements movieId="MOVIE-00002" title="아이언맨" status="RUNNING"
+http POST http://movie:8080/movieManagements movieId="MOVIE-00003" title="토르" status="WAITING"
 ```
 
 * Movie 서비스 내 MOVIE_MANAGEMENTS (영화관리) 테이블 데이터 생성 완료
-
-```json
-"movieManagements": [
-    {
-        "_links": {
-            "movieManagement": {
-                "href": "http://localhost:8083/movieManagements/1"
-            },
-            "self": {
-                "href": "http://localhost:8083/movieManagements/1"
-            }
-        },
-        "movieId": "MOVIE-00001",
-        "status": "RUNNING",
-        "title": "어벤져스"
-    },
-    {
-        "_links": {
-            "movieManagement": {
-                "href": "http://localhost:8083/movieManagements/2"
-            },
-            "self": {
-                "href": "http://localhost:8083/movieManagements/2"
-            }
-        },
-        "movieId": "MOVIE-00002",
-        "status": "RUNNING",
-        "title": "아이언맨"
-    },
-    {
-        "_links": {
-            "movieManagement": {
-                "href": "http://localhost:8083/movieManagements/3"
-            },
-            "self": {
-                "href": "http://localhost:8083/movieManagements/3"
-            }
-        },
-        "movieId": "MOVIE-00003",
-        "status": "WAITING",
-        "title": "토르"
-    }
-]
-```
+![](new-movie-registe.png)
 
 * Theater 서비스 내 MOVIES (좌석배정) 테이블 데이터 생성 완료
 
-```json
-"movies": [
-    {
-        "_links": {
-            "movie": {
-                "href": "http://localhost:8084/movies/1"
-            },
-            "self": {
-                "href": "http://localhost:8084/movies/1"
-            }
-        },
-        "movieId": "MOVIE-00001",
-        "screenId": "어벤져스_상영관"
-    },
-    {
-        "_links": {
-            "movie": {
-                "href": "http://localhost:8084/movies/2"
-            },
-            "self": {
-                "href": "http://localhost:8084/movies/2"
-            }
-        },
-        "movieId": "MOVIE-00002",
-        "screenId": "아이언맨_상영관"
-    },
-    {
-        "_links": {
-            "movie": {
-                "href": "http://localhost:8084/movies/3"
-            },
-            "self": {
-                "href": "http://localhost:8084/movies/3"
-            }
-        },
-        "movieId": "MOVIE-00003",
-        "screenId": "토르_상영관"
-    }
-]
-```
-
-
+![](new-theater.png)
 
 ### 영화 예매 처리 : 고객이 영화와 좌석번호를 선택하여 예매를 요청하면 결재요청(pay)은 (req/res)되며, 결재 성공 시 극장(theater) 상영관 예매가 완료 됩니다.
 
 * 예매 요청
 ```
-http POST http://localhost:8081/reservations/new bookId="B1001" customerId="C1001" movieId="MOVIE-00001" seatId="A-1"
-http POST http://localhost:8081/reservations/new bookId="B1002" customerId="C1002" movieId="MOVIE-00002" seatId="B-1"
-http POST http://localhost:8081/reservations/new bookId="B1003" customerId="C1003" movieId="MOVIE-00003" seatId="C-1"
+http POST http://app:8080/reservations/new bookId="B1001" customerId="C1001" movieId="MOVIE-00001" seatId="A-1"
+http POST http://app:8080/reservations/new bookId="B1002" customerId="C1002" movieId="MOVIE-00002" seatId="B-1"
+http POST http://app:8080/reservations/new bookId="B1003" customerId="C1003" movieId="MOVIE-00003" seatId="C-1"
 ```
 
 * PAY 서비스 내 APPROVALS (승인내역) 테이블 데이터 생성 완료
@@ -408,9 +326,9 @@ http POST http://localhost:8081/reservations/new bookId="B1003" customerId="C100
 
 * 예약 취소 요청
 ```
-http DELETE http://localhost:8081/reservations/B1001    
-http DELETE http://localhost:8081/reservations/B1002
-http DELETE http://localhost:8081/reservations/B1003
+http DELETE http://app:8080/reservations/B1001    
+http DELETE http://app:8080/reservations/B1002
+http DELETE http://app:8080/reservations/B1003
 ```
 
 * PAY 서비스 내 APPROVALS (승인내역) 테이블 데이터 삭제 완료
@@ -587,8 +505,12 @@ http POST http://localhost:8081/reservations/new bookId="B1001" customerId="C100
 ```
 
 * Response Message : Pay disapproved가 뜨면서 Pay 서비스를 확인하라는 문구를 보낸다.
+
 ```
->http POST http://localhost:8081/reservations/new bookId="B1001" customerId="C1001" movieId="MOVIE-00001" seatId="A-1"
+http POST http://app:8080/reservations/new bookId="B1001" customerId="C1001" movieId="MOVIE-00001" seatId="A-1"
+```
+
+```
 HTTP/1.1 400
 Connection: close
 Content-Type: application/json;charset=UTF-8
