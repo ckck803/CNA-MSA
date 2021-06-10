@@ -142,6 +142,13 @@ kubectl exec -it pod/siege -c siege -- /bin/bash
 ```
 ### 영화 등록 처리 : 관리자가 영화를 등록 합니다.
 
+1. Movie 서비스를 이용해 영화를 등록한다.
+2. 새로운 영화 등록 Event가 발생
+3. Theater 서비스에서 해당 Event를 수신 후 데이터를 생성
+
+- 쓰기 : Movie 서비스를 통해 Theater 서비스에 데이터를 넣어준다.
+- 읽기 : Theater 서비스를 통해 등록된 영화목록을 확인할 수 있다.
+
 * MOVIE 등록
 ```
 http POST http://movie:8080/movieManagements movieId="MOVIE-00001" title="어벤져스" status="RUNNING"
@@ -167,162 +174,33 @@ http POST http://app:8080/reservations/new bookId="B1003" customerId="C1003" mov
 
 * PAY 서비스 내 APPROVALS (승인내역) 테이블 데이터 생성 완료
 
-```json
-"approvals": [
-    {
-        "_links": {
-            "approval": {
-                "href": "http://localhost:8082/approvals/1"
-            },
-            "self": {
-                "href": "http://localhost:8082/approvals/1"
-            }
-        },
-        "bookId": "B1001",
-        "customerId": null,
-        "movieId": "MOVIE-00001",
-        "payId": "33bfd6df-6fbd-4d4d-b739-659c5199601e",
-        "seatId": "A-1"
-    },
-    {
-        "_links": {
-            "approval": {
-                "href": "http://localhost:8082/approvals/2"
-            },
-            "self": {
-                "href": "http://localhost:8082/approvals/2"
-            }
-        },
-        "bookId": "B1002",
-        "customerId": null,
-        "movieId": "MOVIE-00002",
-        "payId": "d934f33b-b9f7-4c97-99ab-69a09e0c9612",
-        "seatId": "B-1"
-    },
-    {
-        "_links": {
-            "approval": {
-                "href": "http://localhost:8082/approvals/3"
-            },
-            "self": {
-                "href": "http://localhost:8082/approvals/3"
-            }
-        },
-        "bookId": "B1003",
-        "customerId": null,
-        "movieId": "MOVIE-00003",
-        "payId": "bdcc11fd-12b7-4c4b-b09f-79ad5600f85c",
-        "seatId": "C-1"
-    }
-]
-```
+![](new-reservations.png)
 
 * App 서비스 내 RESERVATIONS (예매내역) 테이블 데이터 생성 완료
 
-```js
-"reservations": [
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/1"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/1"
-            }
-        },
-        "bookId": "B1001",
-        "bookedYn": "Y",
-        "customerId": "C1001",
-        "movieId": "MOVIE-00001",
-        "payId": "8044786d-c478-417e-84c4-11fe8e60f1f3",
-        "seatId": "A-1"
-    },
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/2"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/2"
-            }
-        },
-        "bookId": "B1002",
-        "bookedYn": "Y",
-        "customerId": "C1002",
-        "movieId": "MOVIE-00002",
-        "payId": "3d95b581-55c6-47be-ba99-76e2239088fe",
-        "seatId": "B-1"
-    },
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/3"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/3"
-            }
-        },
-        "bookId": "B1003",
-        "bookedYn": "Y",
-        "customerId": "C1003",
-        "movieId": "MOVIE-00003",
-        "payId": "57b41744-be82-469a-abb0-ed68ada367e1",
-        "seatId": "C-1"
-    }
-]
-```
+![](new-pay-approvals.png)
+
+## 승인(req/res)완료 후 이벤트
+
+- 결재 승인 이벤트가 발생
+- Point 서비스 - 포인트 적립
+- Theater 서비스 - 좌석 예약
+#### [개인과제] 결재가 완료 됬을시 포인트를 적립해준다.(pub/sub)
+
+![](new-point.png)
 
 * THEATER 서비스 내 MOVIE_SEATS (좌석배정내역) 테이블 데이터 생성 완료
 
-```json
-"movieSeats": [
-    {
-        "_links": {
-            "movieSeat": {
-                "href": "http://localhost:8084/movieSeats/6"
-            },
-            "self": {
-                "href": "http://localhost:8084/movieSeats/6"
-            }
-        },
-        "bookId": "B1001",
-        "screenId": "어벤져스_상영관",
-        "seatId": "A-1",
-        "status": "Reserved"
-    },
-    {
-        "_links": {
-            "movieSeat": {
-                "href": "http://localhost:8084/movieSeats/7"
-            },
-            "self": {
-                "href": "http://localhost:8084/movieSeats/7"
-            }
-        },
-        "bookId": "B1002",
-        "screenId": "아이언맨_상영관",
-        "seatId": "B-1",
-        "status": "Reserved"
-    },
-    {
-        "_links": {
-            "movieSeat": {
-                "href": "http://localhost:8084/movieSeats/8"
-            },
-            "self": {
-                "href": "http://localhost:8084/movieSeats/8"
-            }
-        },
-        "bookId": "B1003",
-        "screenId": "토르_상영관",
-        "seatId": "C-1",
-        "status": "Reserved"
-    }
-]
-```
-
+![](new-movieSeats.png)
 
 ### 영화 예매 취소 처리 : 고객이 특정 예약을 취소하면 결재(pay) 및 해당 극장(theater) 예약이 취소 됩니다.
+
+- 고객이 예약 취소 요청을 보낸다.
+- App 서비스에서 Cancel 이벤트를 발생
+- Pay 서비스에서 Cancel 이벤트를 수신 후 취소가 됐다는 이벤트를 발생
+- App 서비스에서 결재 취소 이벤트를 수신 후 status를 N으로 비활성화
+- Point 서비스에서 결재 취소 이벤트를 수신 후 Point 이력을 삭제
+- Theater 서비스에서 결재 취소 이벤트 수신 후 좌석을 cancel상태로 바꿈
 
 * 예약 취소 요청
 ```
@@ -331,120 +209,23 @@ http DELETE http://app:8080/reservations/B1002
 http DELETE http://app:8080/reservations/B1003
 ```
 
+![](new-delete.png)
+
 * PAY 서비스 내 APPROVALS (승인내역) 테이블 데이터 삭제 완료
-```
-        "approvals": []
-```
 
-* APP 서비스 내 RESERVATIONS (예매내역) 테이블 STASUS 갱신 완료 
+![](new-delete-pay.png)
 
-```json
-"reservations": [
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/1"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/1"
-            }
-        },
-        "bookId": "B1001",
-        "bookedYn": "N",
-        "customerId": "C1001",
-        "movieId": "MOVIE-00001",
-        "payId": "8044786d-c478-417e-84c4-11fe8e60f1f3",
-        "seatId": "A-1"
-    },
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/2"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/2"
-            }
-        },
-        "bookId": "B1002",
-        "bookedYn": "N",
-        "customerId": "C1002",
-        "movieId": "MOVIE-00002",
-        "payId": "3d95b581-55c6-47be-ba99-76e2239088fe",
-        "seatId": "B-1"
-    },
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/3"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/3"
-            }
-        },
-        "bookId": "B1003",
-        "bookedYn": "N",
-        "customerId": "C1003",
-        "movieId": "MOVIE-00003",
-        "payId": "57b41744-be82-469a-abb0-ed68ada367e1",
-        "seatId": "C-1"
-    }
-]
-```
+* APP 서비스 내에서 status를 N으로 갱신
+
+![](new-cancel-reservation.png)
+
+#### [개인과제] Point 서비스에서는 포인트 적립 내용을 삭제한다.
+
+![](new-delete-point.png)
 
 * THEATER 서비스 내 MOVIE_SEATS (좌석배정내역) 테이블 STATUS 갱신 완료
 
-```json
-"reservations": [
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/1"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/1"
-            }
-        },
-        "bookId": "B1001",
-        "bookedYn": "N",
-        "customerId": "C1001",
-        "movieId": "MOVIE-00001",
-        "payId": "8044786d-c478-417e-84c4-11fe8e60f1f3",
-        "seatId": "A-1"
-    },
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/2"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/2"
-            }
-        },
-        "bookId": "B1002",
-        "bookedYn": "N",
-        "customerId": "C1002",
-        "movieId": "MOVIE-00002",
-        "payId": "3d95b581-55c6-47be-ba99-76e2239088fe",
-        "seatId": "B-1"
-    },
-    {
-        "_links": {
-            "reservation": {
-                "href": "http://localhost:8081/reservations/3"
-            },
-            "self": {
-                "href": "http://localhost:8081/reservations/3"
-            }
-        },
-        "bookId": "B1003",
-        "bookedYn": "N",
-        "customerId": "C1003",
-        "movieId": "MOVIE-00003",
-        "payId": "57b41744-be82-469a-abb0-ed68ada367e1",
-        "seatId": "C-1"
-    }
-]
-```
+![](new-canceled-theater.png)
 
 ---
 ## Gateway 적용
@@ -671,7 +452,7 @@ $kubectl get all
 
 ```shell
 # Spring Cloud 프로젝트 배포를 위한 namespace 
-kubectl create ns team02
+kubectl create ns user12
 # Kafka를 배포하기 위한 namespace
 kubectl create ns kafka
 # 생성된 namespace 목록을 가져온다.
@@ -1328,12 +1109,15 @@ team02 message.vi!
 ```
 위치 : /reqres_theater/movie/pom.xml
 ```
-![image](https://user-images.githubusercontent.com/81547613/119462389-a01fd580-bd7b-11eb-9a3b-ac4e9f594d67.png)
 
+Dependency 추가
+
+![](new-dependency.png)
 ```
 위치 : /reqres_theater/movie/src/main/resources/application.yml
 ```
-![image](https://user-images.githubusercontent.com/81547613/119462509-c2195800-bd7b-11eb-867b-0e6cfc5b4d67.png)
+
+![](new-movie-hsqldb.png)
 
 * 다른 시스템은 모두 H2DB 사용
 ```
@@ -1345,6 +1129,8 @@ team02 message.vi!
 
 ---
 ## Zero-downtime deploy (Readiness Probe)
+
+> 서비스 가능여부 확인
 
 ### 현재 POD 개수 확인 (2개)
 
@@ -1359,19 +1145,7 @@ pod/stresstool               1/1     Running   0          28m
 
 ### deployment.yml에 readiness 옵션을 추가 
 
-```shell
-- deployment.yml
-#####################################################
-          readinessProbe:
-            httpGet:
-              path: '/actuator/health'
-              port: 8080
-            initialDelaySeconds: 10
-            timeoutSeconds: 2
-            periodSeconds: 5
-            failureThreshold: 10
-#####################################################
-```
+![](new-readness.png)
 
 ### 부하 기능 API 추가
 ```java
@@ -1407,33 +1181,46 @@ private String findMyIpAddress() {
 ### 부하 기능 api 수행
 
 ```shell
-# multitool Container 내부로 들어감.
-kubectl exec -it pod/multitool -- /bin/sh
+kubectl exec -it pod/siege -c siege -- /bin/bash
+```
+
+
+```
 while true; do curl movie:8080/serviceAddress; echo echo ""; sleep 1; done
+```
+
+
+## Readiness 테스트 수행결과
+
+* 서비스가 Round Robin 형태로 번갈아 가면서 요청을 처리함
+
+```shell
+movie-5f6c5757cb-5q2j8/10.1.1.211echo 
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+movie-5f6c5757cb-5q2j8/10.1.1.211echo
+movie-5f6c5757cb-m7brh/10.1.1.212echo
+```
+
+### Movie 서비스 하나 정지
+
+```http
 http http://movie:8080/actuator/health
 http put http://movie:8080/actuator/down 
 ```
 
-
-### Readiness 테스트 수행결과
-
-* 정상적으로 요청처리 가능한 POD의 응답 수신
+서비스를 하나 정지하면 그때부터는 한 서비스에서만 데이터를 처리하기 시작한다.
 
 ```shell
-movie-5f6c5757cb-5q2j8/10.1.1.211echo  <<<< 최초 2개의 POD에 대하여 번갈아가며 수행가능상태 응답
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-5q2j8/10.1.1.211echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-5q2j8/10.1.1.211echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-5q2j8/10.1.1.211echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo  <<<< 한개의 POD 중지요청 (Health down)
+movie-5f6c5757cb-m7brh/10.1.1.212echo  
 movie-5f6c5757cb-5q2j8/10.1.1.211echo
 movie-5f6c5757cb-m7brh/10.1.1.212echo
 movie-5f6c5757cb-5q2j8/10.1.1.211echo
@@ -1447,7 +1234,10 @@ movie-5f6c5757cb-m7brh/10.1.1.212echo
 movie-5f6c5757cb-m7brh/10.1.1.212echo
 movie-5f6c5757cb-5q2j8/10.1.1.211echo
 movie-5f6c5757cb-5q2j8/10.1.1.211echo
-movie-5f6c5757cb-m7brh/10.1.1.212echo  <<<< 한개의 POD만 응답 (요청처리 가능상태)
+movie-5f6c5757cb-m7brh/10.1.1.212echo  
+======================================
+# movie-5f6c5757cb-5q2j8/10.1.1.211echo서비스 완전 종료
+======================================
 movie-5f6c5757cb-m7brh/10.1.1.212echo
 movie-5f6c5757cb-m7brh/10.1.1.212echo
 movie-5f6c5757cb-m7brh/10.1.1.212echo
